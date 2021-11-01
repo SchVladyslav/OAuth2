@@ -6,11 +6,7 @@ const PORT = 3000;
 const app = express();
 
 const start = async () => {
-  try {
     app.listen(PORT, () => console.log(`Server started on PORT = ${PORT}`));
-  } catch (error) {
-    console.log(error);
-  }
 };
 
 start();
