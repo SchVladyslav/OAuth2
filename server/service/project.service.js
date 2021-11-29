@@ -10,7 +10,7 @@ class ProjectService {
     const projectData = data; // TODO: scope
     const projectName = projectData.name; // projectID
     const candidate = await ProjectModel.findOne({ name: projectName });
-    console.log(candidate)
+
     if (candidate) {
       throw ApiError.BadRequest(`Project with the same name already exist!`);
     }

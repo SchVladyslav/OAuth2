@@ -20,9 +20,9 @@ router.get("/project/projects-list", authMiddleware, projectController.getProjec
 router.get("/oauth/verify", authMiddleware, projectMiddleware, projectController.verify);
 router.get("/oauth/code", authMiddleware, projectMiddleware, projectController.code);
 router.get("/oauth/token", authMiddleware, projectMiddleware, projectController.token);
+router.get("/oauth/users", authMiddleware, userController.getUsers);
 
 router.get("/refresh", userController.refresh);
-router.get("/users", authMiddleware, userController.getUsers);
 
 router.delete("/project", authMiddleware,  projectController.delete)
 
