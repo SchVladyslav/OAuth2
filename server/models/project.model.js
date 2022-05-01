@@ -1,12 +1,12 @@
 const { Schema, model } = require("mongoose");
 
 const projectSchema = new Schema({
-  projectSecret: {
+  client_secret: {
     type: String,
     required: true,
     unique: true,
   },
-  projectID: {
+  client_id: {
     type: String,
     required: true,
     unique: true,

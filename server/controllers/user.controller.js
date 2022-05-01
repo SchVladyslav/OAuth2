@@ -1,13 +1,20 @@
 const userService = require("../service/user.service");
-const { validationResult } = require('express-validator');
-const ApiError = require('../exceptions/api-error');
+const { validationResult } = require("express-validator");
+const ApiError = require("../exceptions/api-error");
 
 class UserController {
+  async authorize(req, res) {
+    const { client_id, scope, response_type, redirect_uri } = req.query;
+    return res.json(
+      `${process.env.OAUTH_CLIENT_URL}login?client_id=${client_id}&scope=${scope}&response_type=${response_type}&redirect_uri=${redirect_uri}`
+    );
+  }
+
   async signup(req, res, next) {
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return next(ApiError.BadRequest('Validation Error', errors.array())); 
+        return next(ApiError.BadRequest("Validation Error", errors.array()));
       }
 
       const { email, password } = req.body;
@@ -31,7 +38,7 @@ class UserController {
         maxAge: 2 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
-      
+
       return res.json(userData);
     } catch (error) {
       next(error);
@@ -42,8 +49,8 @@ class UserController {
     try {
       const { refresh_token } = req.cookies;
       const token = await userService.logout(refresh_token);
-      res.clearCookie('refresh_token');
-      
+      res.clearCookie("refresh_token");
+
       return res.json(token);
     } catch (error) {
       next(error);
@@ -52,14 +59,14 @@ class UserController {
 
   async refresh(req, res, next) {
     try {
-        const { refresh_token } = req.cookies;
-        const userData = await userService.refresh(refresh_token);
-        res.cookie("refresh_token", userData.refresh_token, {
-          maxAge: 2 * 24 * 60 * 60 * 1000,
-          httpOnly: true,
-        });
-        
-        return res.json(userData);
+      const { refresh_token } = req.cookies;
+      const userData = await userService.refresh(refresh_token);
+      res.cookie("refresh_token", userData.refresh_token, {
+        maxAge: 2 * 24 * 60 * 60 * 1000,
+        httpOnly: true,
+      });
+
+      return res.json(userData);
     } catch (error) {
       next(error);
     }

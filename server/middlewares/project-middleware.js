@@ -3,15 +3,15 @@ const ProjectModel = require("../models/project.model");
 
 module.exports = async function (req, res, next) {
   try {
-    const projectID = req.query.projectID;
-    const redirectURL = req.query.redirectURL;
+    const client_id = req.query.client_id;
+    const redirect_uri = req.query.redirect_uri;
     // const scope = req.body.scope;
-    const project = await ProjectModel.findOne({ projectID });
+    const project = await ProjectModel.findOne({ client_id });
 
     if (!project) {
-      return next(ApiError.NotFound("Project ID does not exist"));
+      return next(ApiError.NotFound("Client ID does not exist"));
     }
-    if (!project.redirectURLs.includes(redirectURL)) {
+    if (!project.redirectURLs.includes(redirect_uri)) {
       next(ApiError.BadRequest("Redirect URL mismatch!"));
     }
     //   if (project.scope != scope) {

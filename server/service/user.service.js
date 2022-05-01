@@ -13,23 +13,23 @@ class UserService {
     }
     const hashPassword = await bcrypt.hash(password, 3);
     // const activationLink = uuid.v4();
-    
+
     const user = await UserModel.create({ email, password: hashPassword });
     const userDto = new UserDto(user); // id, email
-    
-    const tokens = tokenService.generateTokens({...userDto});
+
+    const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refresh_token);
-    
+
     return {
       ...tokens,
-      user: userDto
-    }
+      user: userDto,
+    };
   }
 
   async login(email, password) {
-    const user = await UserModel.findOne({email});
+    const user = await UserModel.findOne({ email });
     if (!user) {
-      throw ApiError.BadRequest("User with the same email already exist!");
+      throw ApiError.BadRequest("User with this email doesn't exist!");
     }
 
     const isPasswordEquals = await bcrypt.compare(password, user.password);
@@ -38,13 +38,13 @@ class UserService {
     }
 
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({...userDto});
+    const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refresh_token);
-    
+
     return {
       ...tokens,
-      user: userDto
-    }
+      user: userDto,
+    };
   }
 
   async refresh(refreshToken) {
@@ -59,15 +59,15 @@ class UserService {
       throw ApiError.UnathorizedError();
     }
 
-    const user = await UserModel.findById(userData.id) // data about user could be refreshed
+    const user = await UserModel.findById(userData.id); // data about user could be refreshed
     const userDto = new UserDto(user);
-    const tokens = tokenService.generateTokens({...userDto});
+    const tokens = tokenService.generateTokens({ ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refresh_token);
-    
+
     return {
       ...tokens,
-      user: userDto
-    }
+      user: userDto,
+    };
   }
 
   async logout(refreshToken) {

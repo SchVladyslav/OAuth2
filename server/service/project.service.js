@@ -4,11 +4,12 @@ const ProjectModel = require("../models/project.model");
 const UserDto = require("../dtos/user.dto");
 const tokenModel = require("../models/token.model");
 const ApiError = require("../exceptions/api-error");
+const userModel = require("../models/user.model");
 
 class ProjectService {
   async create(data, user) {
-    const projectData = data; // TODO: scope
-    const projectName = projectData.name; // projectID
+    const projectData = data; // TODO: add scope
+    const projectName = projectData.name; // client_id
     const candidate = await ProjectModel.findOne({ name: projectName });
 
     if (candidate) {
@@ -16,10 +17,10 @@ class ProjectService {
     }
 
     projectData.redirectURLs = [projectData.url];
-    projectData.projectID = projectName + ".oauth.app";
+    projectData.client_id = projectName + ".oauth.app";
     projectData.createdBy = user.id;
-    const hash = await bcrypt.hash(projectData.projectID, 3);
-    projectData.projectSecret = hash;
+    const hash = await bcrypt.hash(projectData.client_id, 3);
+    projectData.client_secret = hash;
     const project = await ProjectModel.create({ ...projectData });
 
     return project; // DTO?
@@ -30,8 +31,8 @@ class ProjectService {
     const payload = {
       access,
       id: user.id,
-      projectID: project.projectID,
-      projectSecret: project.projectSecret,
+      client_id: project.client_id,
+      client_secret: project.client_secret,
       // scope: project.scope,
     };
 
@@ -40,8 +41,9 @@ class ProjectService {
     return tokenData.code;
   }
 
-  async getTokens(data, user) {
-    const userDto = new UserDto(user);
+  async getTokens(data) {
+    // user
+    // const userDto = new UserDto(user);
     const authCode = data.code;
 
     if (!authCode) {
@@ -49,14 +51,17 @@ class ProjectService {
         `You are attemping to get token without auth_code!`
       );
     }
-    const { code } = await tokenModel.findOne({ userId: userDto.id });
+    const { userId, code } = await tokenModel.findOne({ code: authCode });
+    const user = await userModel.findOne({ userId });
+    const userDto = new UserDto(user);
+
     if (code !== authCode) {
       throw ApiError.BadRequest(`Invalid auth_code!`);
     }
 
     const tokens = tokenService.generateTokens({ ...data, ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refresh_token);
-    
+
     return { ...tokens };
   }
 

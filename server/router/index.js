@@ -16,10 +16,12 @@ router.post("/auth/login", userController.login);
 router.post("/auth/logout", userController.logout);
 router.post("/project/create", authMiddleware, projectController.create)
 
-router.get("/project/projects-list", authMiddleware, projectController.getProject);
+router.get("/oauth/authorize", projectMiddleware, userController.authorize);
 router.get("/oauth/verify", authMiddleware, projectMiddleware, projectController.verify);
 router.get("/oauth/code", authMiddleware, projectMiddleware, projectController.code);
-router.get("/oauth/token", authMiddleware, projectMiddleware, projectController.token);
+router.get("/oauth/token", projectMiddleware, projectController.token);
+router.get("/project/projects-list", authMiddleware, projectController.getProject);
+
 router.get("/oauth/users", authMiddleware, userController.getUsers);
 
 router.get("/refresh", userController.refresh);

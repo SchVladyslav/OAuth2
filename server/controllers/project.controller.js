@@ -32,8 +32,8 @@ class ProjectController {
 
   async token(req, res, next) {
     try {
-      if (req.query.projectSecret !== req.project.projectSecret) {
-        return next(ApiError.BadRequest("Mismatch ProjectID and Secret"));
+      if (req.query.client_secret !== req.project.client_secret) {
+        return next(ApiError.BadRequest("Mismatch clientID and ClientSecret"));
       }
       const tokens = await projectService.getTokens(req.query, req.user);
 
