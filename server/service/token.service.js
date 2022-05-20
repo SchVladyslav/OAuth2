@@ -15,12 +15,13 @@ class TokenService {
   }
 
   async saveToken(userId, refreshToken) {
-    const tokenData = await tokenModel.findOne({ user: userId });
+    const tokenData = await tokenModel.findOne({ userId: userId });
     if (tokenData) {
       tokenData.refreshToken = refreshToken;
       return tokenData.save();
     }
-    const token = await tokenModel.create({ user: userId, refreshToken });
+
+    const token = await tokenModel.create({ userId, refreshToken });
     return token;
   }
 
@@ -38,10 +39,25 @@ class TokenService {
       const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
       return userData;
     } catch (error) {
-      
+      return null;
     }
   }
 
+  async generateOAuthCode(payload) {
+    const code = jwt.sign(payload, process.env.JWT_ACCESS_SECRET, {
+      expiresIn: "15s",
+    });
+    const userId = payload.id;
+    const tokenData = await tokenModel.findOne({ userId });
+    if (tokenData) {
+      tokenData.code = code;
+      return tokenData.save();
+    }
+    return tokenData;
+
+      
+    }
+  }
   async removeToken(refreshToken) {
     const tokenData = await tokenModel.deleteOne({ refreshToken });
     return tokenData;
