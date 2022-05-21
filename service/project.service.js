@@ -61,7 +61,6 @@ class ProjectService {
 
     const tokens = tokenService.generateTokens({ ...data, ...userDto });
     await tokenService.saveToken(userDto.id, tokens.refresh_token);
-
     return { ...tokens };
   }
 
