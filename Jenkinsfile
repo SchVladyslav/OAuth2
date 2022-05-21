@@ -17,6 +17,6 @@ pipeline {
  stage('Deploy') {
  steps {
  echo 'Deploying.'
- sh 'BUILD_ID=dontKillMe pm2 start app.js'
+ sh 'BUILD_ID=dontKillMe pm2 start index.js'
  }
  } }}
