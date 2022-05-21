@@ -28,4 +28,6 @@ router.get("/refresh", userController.refresh);
 
 router.delete("/project", authMiddleware,  projectController.delete)
 
+router.delete("/project", authMiddleware,  projectController.delete)
+
 module.exports = router;

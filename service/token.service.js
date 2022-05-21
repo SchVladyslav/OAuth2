@@ -20,7 +20,6 @@ class TokenService {
       tokenData.refreshToken = refreshToken;
       return tokenData.save();
     }
-
     const token = await tokenModel.create({ userId, refreshToken });
     return token;
   }
@@ -57,7 +56,7 @@ class TokenService {
 
       
     }
-  }
+
   async removeToken(refreshToken) {
     const tokenData = await tokenModel.deleteOne({ refreshToken });
     return tokenData;
